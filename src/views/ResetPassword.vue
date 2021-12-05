@@ -20,52 +20,40 @@
             placeholder="E-mail"
             v-model="email"
           />
-          <input
-            class="input"
-            type="password"
-            id="txt-password"
-            name="password"
-            placeholder="Password"
-            v-model="password"
-          />
-        </div>
+         
 
         <div class="field-group-inline">
-          <router-link to="/resetpassword">Forgot Password?</router-link>
+          <router-link to="/">Remember Password?</router-link>
         </div>
         <div class="field-group">
-          <input class="btn-submit" type="submit" value="Login" @click="loginUser"/>
+          <input class="btn-submit" type="submit" value="Reset" @click="resetemail"/>
         </div>
       </div>
+    </div>
     </div>
   </body>
 </template>
 
 <script>
 import { passAuth } from "../firebase.service";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import Router from "../router";
+import { sendPasswordResetEmail } from "firebase/auth";
+// import Router from "../router";
 
 export default {
   name: "Home",
   data() {
     return {
       email: "",
-      password: "",
     };
   },
-    methods: {
-    loginUser() {
-      console.log(this.email, this.password)
-      signInWithEmailAndPassword(passAuth(), this.email, this.password)
-        .then((result) => {
-          console.log(result.user.uid)
-          // Add checking of account if able to login in admin dashboard
-          this.$storage.setStorageSync("userid", result.user.uid);
-          Router.push("DashBoard");
+  methods: {
+    resetemail() {
+      sendPasswordResetEmail(passAuth(), this.email)
+        .then(() => {
+          alert("Check Email to reset password");
         })
         .catch((error) => {
-          alert(error)
+          alert("ERROR", error);
         });
     },
   },
@@ -104,12 +92,6 @@ a:focus {
   color: #c30f42;
   text-decoration: underline;
 }
-
-.logo-wrapper {
-  text-align: center;
-  padding-top: 4em;
-}
-
 .content-body {
   min-height: 100vh;
   width: 100%;
@@ -213,4 +195,5 @@ img.logo {
   width: 100%;
   margin-bottom: 50px;
 }
+
 </style>

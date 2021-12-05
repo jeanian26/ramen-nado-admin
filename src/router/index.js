@@ -14,6 +14,60 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  },
+  {
+    path: '/resetpassword',
+    name: 'ResetPassword',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/ResetPassword.vue')
+  },
+  {
+    path: '/Dashboard',
+    name: 'DashBoard',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/DashBoard.vue')
+  },
+  {
+    path: '/Orders',
+    name: 'Orders',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/Orders.vue')
+  },
+  {
+    path: '/Menu',
+    name: 'Menu',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/Menu.vue')
+  },
+  {
+    path: '/Menu/:key',
+    name: 'MenuList',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/MenuList.vue')
+  },
+  {
+    path: '/newitem',
+    name: 'NewItem',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/NewItem.vue')
+  },
+  {
+    path: '/newcategory',
+    name: 'NewCategory',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/NewCategory.vue')
+  },
+  {
+    path: '/editcategory/:key',
+    name: 'EditCategory',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/EditCategory.vue')
+  },
+  {
+    path: '/Menu/:category/:key',
+    name: 'editItem',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/editItem.vue')
   }
 ]
 
