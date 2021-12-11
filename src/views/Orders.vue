@@ -59,6 +59,7 @@ import navBar from "@/components/navBar.vue";
 import pageHeader from "@/components/pageHeader.vue";
 import { getDatabase, ref, child, get } from "firebase/database";
 import OverviewCard from "@/components/OverviewCard.vue";
+import Router from "../router";
 
 export default {
   name: "Dash-board",
@@ -165,6 +166,11 @@ export default {
         return result * sortOrder;
       };
     },
+    goToOrder(key,test){
+      console.log('key',key)
+      console.log('test',test)
+      Router.push(`/Orders/${test}/${key}`);
+    }
   },
 };
 </script>

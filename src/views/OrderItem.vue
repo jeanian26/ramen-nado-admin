@@ -1,0 +1,300 @@
+<template>
+  <div class="container">
+    <div class="navbar-container">
+      <navBar></navBar>
+      <pageHeader :page="page" :user="user"></pageHeader>
+    </div>
+    <div class="page-container" id="menuList">
+      <div class="form-container">
+        <h3>Order ID: {{ orderData.orderNumber }}</h3>
+        <button>PROCESS ORDER</button>
+        <!-- <button style="margin-left: 20px">EDIT ORDER</button> -->
+        <br />
+        <br />
+        <br />
+        <h3>Order Details</h3>
+        <table>
+          <tr>
+            <td><strong>Ordered By User ID</strong></td>
+            <td>{{ orderData.orderUserId }}</td>
+          </tr>
+          <tr>
+            <td><strong>Payment Type</strong></td>
+            <td>{{ orderData.orderPayment }}</td>
+          </tr>
+          <tr>
+            <td><strong>Status</strong></td>
+            <td>{{ orderData.orderStatus }}</td>
+          </tr>
+          <tr>
+            <td><strong>Address</strong></td>
+            <td>{{ address }}</td>
+          </tr>
+          <tr>
+            <td><strong>Date and Time Ordered</strong></td>
+            <td>{{ orderData.orderDate }}</td>
+          </tr>
+        </table>
+        <br />
+        <br />
+        <h3>User Details</h3>
+        <table>
+          <tr>
+            <td><strong>User Email</strong></td>
+            <td>{{ UserData.email }}</td>
+          </tr>
+          <tr>
+            <td><strong>User name</strong></td>
+            <td>{{UserData.name }}</td>
+          </tr>
+          <tr>
+            <td><strong>User Phone Number</strong></td>
+            <td>{{UserData.phone}}</td>
+          </tr>
+          
+        </table>
+        <br />
+        <br />
+        <h3>Order Items</h3>
+        <table>
+            <tr>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Extra</th>
+                <th>Total</th>
+            </tr>
+          <tr v-for="items in orderData.orderItems" :key="items">
+            <td>{{items.name}}</td>
+            <td>{{ items.extra }}</td>
+            <td>{{ UserData.email }}</td>
+            <td>{{ items.quantity}}</td>
+            <td>100</td>
+          </tr>
+          
+          
+        </table>
+
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<script>
+import navBar from "@/components/navBar.vue";
+import pageHeader from "@/components/pageHeader.vue";
+// import { uuid } from "vue-uuid";
+import { getDatabase, ref, child, get } from "firebase/database";
+// import Router from "../router";
+
+export default {
+  name: "newItem",
+  components: {
+    navBar,
+    pageHeader,
+  },
+  data() {
+    return {
+      page: "Order Item",
+      ordeRID: this.$route.params.key,
+      UserID: this.$route.params.id,
+      orderData: {},
+      UserData:{},
+      address: "",
+      forEdit: true,
+    };
+  },
+  mounted() {
+    this.getOrder();
+    this.getUserDetails()
+  },
+  methods: {
+    getOrder() {
+      const dbRef = ref(getDatabase());
+      get(child(dbRef, `order/${this.UserID}/${this.ordeRID}`))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            let result = snapshot.val();
+            console.log(result);
+            this.orderData = result;
+            this.address =
+              result.orderAddress.str_number +
+              " " +
+              result.orderAddress.street_name +
+              " " +
+              result.orderAddress.barangay +
+              " " +
+              result.orderAddress.city;
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    getUserDetails() {
+      const dbRef = ref(getDatabase());
+      get(child(dbRef, `accounts/${this.UserID}`))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            let result = snapshot.val();
+            console.log(result);
+            this.UserData = result;
+            
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+  },
+};
+</script>
+
+
+<style>
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 50px;
+}
+.page-container {
+  padding: 30px 0;
+}
+
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  align-items: center;
+}
+.welcome-container img {
+  max-width: 300px;
+}
+
+/* cards */
+.main-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+  grid-auto-rows: 94px;
+  grid-gap: 30px;
+  margin: 20px;
+}
+
+/* grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 30px;
+  margin-top: 50px;
+}
+
+.page-container h2 {
+  text-align: center;
+}
+
+#menuList button {
+  margin: 20px auto 0;
+  padding: 10px 20px;
+  border: none;
+  background-color: #e62222;
+  color: white;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px #ddd3d3;
+}
+#menuList button:hover {
+  background-color: #ee6d6d;
+}
+
+#menuList {
+  display: flex;
+  flex-direction: column;
+}
+
+/* card */
+.product-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.card {
+  max-width: 200px;
+  width: 100%;
+  border: 1px solid #d9d9d9;
+  margin: 15px;
+}
+.card:hover {
+  cursor: pointer;
+  box-shadow: 5px 5px 10px #cbcbcb;
+}
+.card-image-container {
+  height: 200px;
+}
+.card-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-title-container {
+  text-align: center;
+  padding: 10px;
+}
+
+.card-title-container p {
+  margin-top: 10px;
+}
+
+input[type="text"],
+select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type="submit"] {
+  width: 100%;
+  background-color: #e62222;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: #e23e3e;
+}
+
+table {
+  margin-top: 15px;
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+/* td {
+    max-width: 50%;
+    width: 100%;
+} */
+
+td,
+th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
