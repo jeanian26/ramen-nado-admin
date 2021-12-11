@@ -11,22 +11,32 @@
       <router-link class="router" to="/Cart">Cart</router-link>
       <router-link class="router" to="/Menu">Menu</router-link>
       <router-link class="router" to="/Users">Users</router-link>
-      <router-link class="router" to="/Logout">Log Out</router-link>
+      <router-link class="router" to="/Logout" @click="logout()">Log Out</router-link>
     </div>
   </div>
 </template>
 
 <script>
+import { passAuth } from "../firebase.service";
+import { signOut } from "firebase/auth";
 export default {
   name: "navBar",
   props: {
     msg: String,
   },
+  methods: {
+    logout() {
+      signOut(passAuth())
+        .then(() => {
+          alert("Succesfully Logout");
+        })
+        .catch((error) => alert(error));
+    },
+  },
 };
 </script>
 
 <style scoped>
-
 .navbar {
   display: flex;
   align-content: center;
@@ -53,6 +63,6 @@ export default {
   padding-left: 20px;
 }
 html {
-    background-color: rgb(245, 243, 243);
+  background-color: rgb(245, 243, 243);
 }
 </style>

@@ -24,7 +24,7 @@
         />
         <OverviewCard cardTitle="Profit Today" :cardCount="'₱ ' + getProfit()" icon="box" />
         <OverviewCard cardTitle="Low Stocks" :cardCount="stockCount" icon="box" />
-        <OverviewCard cardTitle="Orders Today" :cardCount="orderCount" icon="box" />
+        <OverviewCard cardTitle="Total Orders " :cardCount="orderCount" icon="box" />
       </div>
       <section id="orders">
         <article>
@@ -147,6 +147,12 @@ export default {
         for (let i = 0; i < items.length; i++) {
           console.log(items[i].price * items[i].quantity)
           count = count + (items[i].price * items[i].quantity)
+          let extras = items[i].extra
+          for (let x = 0; x < extras.length; x++){
+            if(extras[x].picked){
+              count = count + extras[x].price
+            }
+          }
         }
       });
       return count;
