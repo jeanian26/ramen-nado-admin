@@ -45,36 +45,40 @@
           </tr>
           <tr>
             <td><strong>User name</strong></td>
-            <td>{{UserData.name }}</td>
+            <td>{{ UserData.name }}</td>
           </tr>
           <tr>
             <td><strong>User Phone Number</strong></td>
-            <td>{{UserData.phone}}</td>
+            <td>{{ UserData.phone }}</td>
           </tr>
-          
         </table>
         <br />
         <br />
         <h3>Order Items</h3>
         <table>
-            <tr>
-                <th>Item Name</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Extra</th>
-                <th>Total</th>
-            </tr>
-          <tr v-for="items in orderData.orderItems" :key="items">
-            <td>{{items.name}}</td>
-            <td>{{ items.extra }}</td>
-            <td>{{ UserData.email }}</td>
-            <td>{{ items.quantity}}</td>
-            <td>100</td>
+          <tr>
+            <th class="orderItems">Item Name</th>
+            <th class="orderItems">Extra</th>
+            <th class="orderItems">Price</th>
+            <th class="orderItems">Quantity</th>
+            <th class="orderItems">Total</th>
           </tr>
-          
-          
+          <tr v-for="items in orderData.orderItems" :key="items">
+            <td>{{ items.name }}</td>
+            <td>
+              <div v-for="extra in items.extra" :key="extra">
+                <div v-if="extra.picked">
+                  <span>{{ extra.name }} ₱{{ extra.price }} </span>
+                </div>
+              </div>
+            </td>
+            <td>₱{{ items.price }}</td>
+            <td>{{ items.quantity }}</td>
+            <td>₱{{ computeItemTotal(items)}}</td>
+          </tr>
         </table>
-
+        <br>
+        <h3><strong>TOTAL PRICE:</strong> ₱{{total}}</h3>
       </div>
     </div>
   </div>
@@ -100,14 +104,16 @@ export default {
       ordeRID: this.$route.params.key,
       UserID: this.$route.params.id,
       orderData: {},
-      UserData:{},
+      UserData: {},
       address: "",
       forEdit: true,
+      total: 0
     };
   },
   mounted() {
     this.getOrder();
-    this.getUserDetails()
+    this.getUserDetails();
+    this.computeOverAllTotal
   },
   methods: {
     getOrder() {
@@ -126,6 +132,24 @@ export default {
               result.orderAddress.barangay +
               " " +
               result.orderAddress.city;
+            
+            let totalPrice = 0
+            var orderItems = result.orderItems
+            for (let items in orderItems){
+                console.log(orderItems[items])
+                totalPrice = totalPrice + (orderItems[items].price * orderItems[items].quantity)
+                let extras = orderItems[items].extra
+                for(let extra in extras){
+                    if(extras[extra].picked === true){
+                        totalPrice = totalPrice + extras[extra].price
+                    }
+                }
+            }
+            console.log("total", totalPrice)
+            this.total = totalPrice
+            
+            
+              
           } else {
             console.log("No data available");
           }
@@ -142,7 +166,6 @@ export default {
             let result = snapshot.val();
             console.log(result);
             this.UserData = result;
-            
           } else {
             console.log("No data available");
           }
@@ -150,6 +173,19 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+    computeItemTotal(item){
+        let totalPrice
+        let extraAdd = 0
+        for (var extra in item.extra){
+            let extraItem = item.extra[extra]
+            if(extraItem.picked === true){
+                extraAdd = extraAdd + extraItem.price
+            }
+        }
+        totalPrice = (item.price * item.quantity) + extraAdd
+        this.totalPrice = Array
+        return totalPrice
     },
   },
 };
@@ -296,5 +332,9 @@ th {
 
 tr:nth-child(even) {
   background-color: #dddddd;
+}
+.orderItems {
+  max-width: 20%;
+  width: 100%;
 }
 </style>

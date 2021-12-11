@@ -74,6 +74,24 @@ const routes = [
     name: 'editItem',
 
     component: () => import(/* webpackChunkName: "about" */ '../views/editItem.vue')
+  },
+  {
+    path: '/cart',
+    name: 'cart',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/Cart.vue')
+  },
+  {
+    path: '/users',
+    name: 'users',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/users.vue')
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/Profile.vue')
   }
 ]
 

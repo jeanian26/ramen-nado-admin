@@ -10,7 +10,6 @@
       <router-link class="router" to="/Orders">Orders</router-link>
       <router-link class="router" to="/Cart">Cart</router-link>
       <router-link class="router" to="/Menu">Menu</router-link>
-      <router-link class="router" to="/events">Riders</router-link>
       <router-link class="router" to="/Users">Users</router-link>
       <router-link class="router" to="/Logout">Log Out</router-link>
     </div>
