@@ -62,11 +62,11 @@ export default {
   color: #777;
   font-size: 30px;
 }
-.overviewCard:hover {
+/* .overviewCard:hover {
   transform: translateY(-3px);
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-}
+} */
 
 /* end cars */
 </style>

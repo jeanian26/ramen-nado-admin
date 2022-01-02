@@ -5,19 +5,18 @@
       <pageHeader page="Dashboard" :user="user"></pageHeader>
     </div>
     <div class="page-container">
-      
       <div class="main-overview">
         <OverviewCard
           cardTitle="Orders Today"
-          cardCount="10"
+          :cardCount="ordersToday"
           icon="motorcycle"
         />
-        <OverviewCard cardTitle="New Users" cardCount="10" icon="users" />
-        <OverviewCard cardTitle="Low Stock" cardCount="10" icon="box" />
+        <OverviewCard cardTitle="New Users" :cardCount=usersCount icon="users" />
+        <OverviewCard cardTitle="Low Stock" :cardCount=stockCount icon="box" />
       </div>
       <div>
-        <section id='dashboard'>
-          <article>
+        <section id="dashboard">
+          <!-- <article>
             <h3>New Users</h3>
             <table>
               <tr>
@@ -50,45 +49,24 @@
                 <td>test</td>
                 <td>test</td>
               </tr>
-
             </table>
             <button>View All</button>
-          </article>
+          </article> -->
           <article>
             <h3>New Orders</h3>
             <table>
               <tr>
-                <th>UserID</th>
-                <th>Email</th>
-                <th>Name</th>
+                <th>OrderID</th>
+                <th>Payment Type</th>
+                <th>Status</th>
               </tr>
-              <tr>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-              </tr>
-              <tr>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-              </tr>
-              <tr>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-              </tr>
-              <tr>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-              </tr>
-              <tr>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
+              <tr v-for="order in arrayData" :key="order.orderNumber">
+                <td>{{ order.orderNumber }}</td>
+                <td>{{ order.orderPayment }}</td>
+                <td>{{ order.orderStatus }}</td>
               </tr>
             </table>
-            <button>View All</button>
+            <button @click="navigate()">View All</button>
           </article>
         </section>
       </div>
@@ -102,6 +80,7 @@ import navBar from "@/components/navBar.vue";
 import pageHeader from "@/components/pageHeader.vue";
 import OverviewCard from "@/components/OverviewCard.vue";
 import { getDatabase, ref, child, get } from "firebase/database";
+import Router from "../router";
 
 export default {
   name: "Dash-board",
@@ -114,21 +93,33 @@ export default {
     return {
       user: "text",
       eventsCount: "",
+      arrayData: [],
+      ordersToday:0,
+      usersCount:0,
+      stockCount:0,
     };
   },
   mounted() {
-    this.getEvents();
+    this.getOrders();
+    this.getUsers();
+    this.getLowStocks();
   },
   methods: {
-    getEvents() {
+    getLowStocks(){
       const dbRef = ref(getDatabase());
-      get(child(dbRef, "Events/"))
+      let lowStocksCount = 0
+        get(child(dbRef, "products/"))
         .then((snapshot) => {
           if (snapshot.exists()) {
             let result = snapshot.val();
-            console.log(typeof result);
-            var size = Object.keys(result).length;
-            this.eventsCount = size;
+            for (const key in result) {
+              console.log(result[key].stock)
+              if (result[key].stock <= 10){
+                lowStocksCount++
+              }
+            }
+            this.stockCount = lowStocksCount
+            
           } else {
             console.log("No data available");
           }
@@ -137,6 +128,66 @@ export default {
           console.error(error);
         });
     },
+
+    getUsers(){
+            const dbRef = ref(getDatabase());
+      get(child(dbRef, "accounts/"))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            let result = snapshot.val()
+            this.usersCount = Object.keys(result).length
+
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    getOrders() {
+      const dbRef = ref(getDatabase());
+      get(child(dbRef, "order/"))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            let count = 0;
+            let result = snapshot.val();
+            for (const key in result) {
+              for (const key2 in result[key]) {
+                var timestamp = Date.parse(result[key][key2].orderDate);
+                var dateObject = new Date(timestamp);
+                if (this.isToday(dateObject)) {
+                  count = count + 1;
+                  if (count <= 5) {
+                    this.arrayData.push(result[key][key2]);
+                  }
+                }
+              }
+            }
+            this.ordersToday = count
+            // arrayData.sort(this.dynamicSort("orderNumber"));
+            // this.orderCount = arrayData.length
+            // this.orders = arrayData;
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    isToday(someDate) {
+      const today = new Date();
+      return (
+        someDate.getDate() == today.getDate() &&
+        someDate.getMonth() == today.getMonth() &&
+        someDate.getFullYear() == today.getFullYear()
+      );
+    },
+    navigate(){
+      Router.push('/Orders')
+    }
   },
 };
 </script>
@@ -170,13 +221,12 @@ export default {
   grid-auto-rows: 94px;
   grid-gap: 30px;
   margin: 20px;
-  
 }
 
 /* grid */
 #dashboard {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* grid-template-columns: repeat(2, 1fr); */
   grid-gap: 30px;
   margin-top: 50px;
 }
@@ -201,12 +251,12 @@ tr:nth-child(even) {
 
 #dashboard article {
   display: flex;
-    height: 320px;
-    width: 100%;
-    flex-direction: column;
-    background-color: white;
-    box-shadow: 5px 5px 10px #ddd3d3;
-    padding: 15px;
+  height: 320px;
+  width: 100%;
+  flex-direction: column;
+  background-color: white;
+  box-shadow: 5px 5px 10px #ddd3d3;
+  padding: 15px;
 }
 
 #dashboard article button {
@@ -217,12 +267,8 @@ tr:nth-child(even) {
   color: white;
   cursor: pointer;
   box-shadow: 5px 5px 10px #ddd3d3;
-  
 }
 #dashboard article button:hover {
-
   background-color: #ee6d6d;
-
-  
 }
 </style>

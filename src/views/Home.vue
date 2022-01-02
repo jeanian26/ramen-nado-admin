@@ -7,9 +7,7 @@
     <div class="content-body">
       <div class="form-wrapper">
         <h1 class="text-title">Ramen nado admin Dashboard</h1>
-        <div class="text-register">
-          You need to be an admin to login
-        </div>
+        <div class="text-register">You need to be an admin to login</div>
 
         <div class="field-group">
           <input
@@ -34,7 +32,12 @@
           <router-link to="/resetpassword">Forgot Password?</router-link>
         </div>
         <div class="field-group">
-          <input class="btn-submit" type="submit" value="Login" @click="loginUser"/>
+          <input
+            class="btn-submit"
+            type="submit"
+            value="Login"
+            @click="loginUser"
+          />
         </div>
       </div>
     </div>
@@ -44,6 +47,7 @@
 <script>
 import { passAuth } from "../firebase.service";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { getDatabase, ref, child, get } from "firebase/database";
 import Router from "../router";
 
 export default {
@@ -54,18 +58,37 @@ export default {
       password: "",
     };
   },
-    methods: {
+  methods: {
     loginUser() {
-      console.log(this.email, this.password)
       signInWithEmailAndPassword(passAuth(), this.email, this.password)
         .then((result) => {
-          console.log(result.user.uid)
+          console.log(result.user.uid);
           // Add checking of account if able to login in admin dashboard
-          this.$storage.setStorageSync("userid", result.user.uid);
-          Router.push("DashBoard");
+          this.checkIfAdmin(result.user.uid);
         })
         .catch((error) => {
-          alert(error)
+          alert(error);
+        });
+    },
+    checkIfAdmin(id) {
+      const dbRef = ref(getDatabase());
+      get(child(dbRef, `accounts/${id}/admin`))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            console.log(snapshot.val());
+            if (snapshot.val() === true) {
+              this.$storage.setStorageSync("userid", id);
+              Router.push("DashBoard");
+            }else{
+              alert("NOT ADMIN")
+            }
+          } else {
+            console.log("No data available");
+            alert("NOT ADMIN");
+          }
+        })
+        .catch((error) => {
+          alert("NOT ADMIN", error);
         });
     },
   },

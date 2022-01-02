@@ -2,10 +2,9 @@
   <div class="container">
     <div class="navbar-container">
       <navBar></navBar>
-      <pageHeader page="Orders" :user="user"></pageHeader>
+      <pageHeader page="Orders" ></pageHeader>
     </div>
     <div class="page-container">
-      <h3>Important Stats</h3>
       <div class="main-overview">
         <OverviewCard
           cardTitle="Pending Order"
@@ -22,7 +21,7 @@
           :cardCount="getNumber('delivered')"
           icon="box"
         />
-        <OverviewCard cardTitle="Profit Today" :cardCount="'₱ ' + getProfit()" icon="box" />
+        <OverviewCard cardTitle="Income" :cardCount="'₱ ' + getProfit()" icon="box" />
         <OverviewCard cardTitle="Low Stocks" :cardCount="stockCount" icon="box" />
         <OverviewCard cardTitle="Total Orders " :cardCount="orderCount" icon="box" />
       </div>
@@ -70,14 +69,13 @@ export default {
   },
   data() {
     return {
-      user: "text",
       eventsCount: "",
       orders: [],
       orderCount:0,
       stockCount:0
     };
   },
-  mounted() {
+  created() {
     this.getData();
   },
   methods: {
@@ -143,6 +141,7 @@ export default {
       let arrayData = this.orders;
       let count = 0;
       arrayData.forEach(function (arrayItem) {
+        console.log(items)
         let items = arrayItem.orderItems;
         for (let i = 0; i < items.length; i++) {
           console.log(items[i].price * items[i].quantity)
@@ -155,7 +154,8 @@ export default {
           }
         }
       });
-      return count;
+      return count;  
+      
     },
 
 

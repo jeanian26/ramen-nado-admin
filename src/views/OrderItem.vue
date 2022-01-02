@@ -6,8 +6,33 @@
     </div>
     <div class="page-container" id="menuList">
       <div class="form-container">
-        <h3>Order ID: {{ orderData.orderNumber }}</h3>
-        <button>PROCESS ORDER</button>
+        <h3>
+          Order ID: {{ orderData.orderNumber }} ({{ orderData.orderStatus }})
+        </h3>
+        <button
+          @click="
+            processOrder(
+              orderData.orderUserId,
+              orderData.orderNumber,
+              'on-the-way'
+            )
+          "
+        >
+          START DELIVERY</button
+        ><span style="margin-left: 20px"
+          ><button
+            class="sub-button"
+            @click="
+              processOrder(
+                orderData.orderUserId,
+                orderData.orderNumber,
+                'cancelled'
+              )
+            "
+          >
+            CANCEL ORDER
+          </button></span
+        >
         <!-- <button style="margin-left: 20px">EDIT ORDER</button> -->
         <br />
         <br />
@@ -74,11 +99,11 @@
             </td>
             <td>₱{{ items.price }}</td>
             <td>{{ items.quantity }}</td>
-            <td>₱{{ computeItemTotal(items)}}</td>
+            <td>₱{{ computeItemTotal(items) }}</td>
           </tr>
         </table>
-        <br>
-        <h3><strong>TOTAL PRICE:</strong> ₱{{total}}</h3>
+        <br />
+        <h3><strong>TOTAL PRICE:</strong> ₱{{ total }}</h3>
       </div>
     </div>
   </div>
@@ -89,7 +114,7 @@
 import navBar from "@/components/navBar.vue";
 import pageHeader from "@/components/pageHeader.vue";
 // import { uuid } from "vue-uuid";
-import { getDatabase, ref, child, get } from "firebase/database";
+import { getDatabase, ref, child, get, update } from "firebase/database";
 // import Router from "../router";
 
 export default {
@@ -107,13 +132,13 @@ export default {
       UserData: {},
       address: "",
       forEdit: true,
-      total: 0
+      total: 0,
     };
   },
   mounted() {
     this.getOrder();
     this.getUserDetails();
-    this.computeOverAllTotal
+    // this.computeOverAllTotal
   },
   methods: {
     getOrder() {
@@ -132,24 +157,23 @@ export default {
               result.orderAddress.barangay +
               " " +
               result.orderAddress.city;
-            
-            let totalPrice = 0
-            var orderItems = result.orderItems
-            for (let items in orderItems){
-                console.log(orderItems[items])
-                totalPrice = totalPrice + (orderItems[items].price * orderItems[items].quantity)
-                let extras = orderItems[items].extra
-                for(let extra in extras){
-                    if(extras[extra].picked === true){
-                        totalPrice = totalPrice + extras[extra].price
-                    }
+
+            let totalPrice = 0;
+            var orderItems = result.orderItems;
+            for (let items in orderItems) {
+              console.log(orderItems[items]);
+              totalPrice =
+                totalPrice +
+                orderItems[items].price * orderItems[items].quantity;
+              let extras = orderItems[items].extra;
+              for (let extra in extras) {
+                if (extras[extra].picked === true) {
+                  totalPrice = totalPrice + extras[extra].price;
                 }
+              }
             }
-            console.log("total", totalPrice)
-            this.total = totalPrice
-            
-            
-              
+            console.log("total", totalPrice);
+            this.total = totalPrice;
           } else {
             console.log("No data available");
           }
@@ -174,18 +198,28 @@ export default {
           console.error(error);
         });
     },
-    computeItemTotal(item){
-        let totalPrice
-        let extraAdd = 0
-        for (var extra in item.extra){
-            let extraItem = item.extra[extra]
-            if(extraItem.picked === true){
-                extraAdd = extraAdd + extraItem.price
-            }
+    computeItemTotal(item) {
+      let totalPrice;
+      let extraAdd = 0;
+      for (var extra in item.extra) {
+        let extraItem = item.extra[extra];
+        if (extraItem.picked === true) {
+          extraAdd = extraAdd + extraItem.price;
         }
-        totalPrice = (item.price * item.quantity) + extraAdd
-        this.totalPrice = Array
-        return totalPrice
+      }
+      totalPrice = item.price * item.quantity + extraAdd;
+      this.totalPrice = Array;
+      return totalPrice;
+    },
+    processOrder(userID, orderID, status) {
+      console.log("orderID", orderID);
+      console.log("userID", userID);
+      const db = getDatabase();
+      const updates = {};
+      updates[`order/${userID}/${orderID}/orderStatus`] = status;
+      update(ref(db), updates).then(() => {
+        location.reload();
+      });
     },
   },
 };
@@ -336,5 +370,8 @@ tr:nth-child(even) {
 .orderItems {
   max-width: 20%;
   width: 100%;
+}
+button.sub-button {
+  background: grey !important;
 }
 </style>

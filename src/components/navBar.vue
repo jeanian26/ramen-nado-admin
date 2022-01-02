@@ -8,9 +8,10 @@
     <div class="navigation">
       <router-link class="router" to="/Dashboard">Dashboard</router-link>
       <router-link class="router" to="/Orders">Orders</router-link>
-      <router-link class="router" to="/Cart">Cart</router-link>
+      <!-- <router-link class="router" to="/Cart">Cart</router-link> -->
       <router-link class="router" to="/Menu">Menu</router-link>
       <router-link class="router" to="/Users">Users</router-link>
+      <router-link class="router" to="/Report">Report</router-link>
       <router-link class="router" to="/Logout" @click="logout()">Log Out</router-link>
     </div>
   </div>
