@@ -4,7 +4,7 @@
       <navBar></navBar>
       <pageHeader page="Users" :user="user"></pageHeader>
     </div>
-    <div class="page-container"></div>
+    <div class="page-container">test</div>
   </div>
 </template>
 

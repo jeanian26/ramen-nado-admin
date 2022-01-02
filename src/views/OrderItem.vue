@@ -9,30 +9,33 @@
         <h3>
           Order ID: {{ orderData.orderNumber }} ({{ orderData.orderStatus }})
         </h3>
-        <button
-          @click="
-            processOrder(
-              orderData.orderUserId,
-              orderData.orderNumber,
-              'on-the-way'
-            )
-          "
-        >
-          START DELIVERY</button
-        ><span style="margin-left: 20px"
-          ><button
-            class="sub-button"
+        <div v-if="orderData.orderStatus === 'pending'">
+          <button 
             @click="
               processOrder(
                 orderData.orderUserId,
                 orderData.orderNumber,
-                'cancelled'
+                'on-the-way'
               )
             "
           >
-            CANCEL ORDER
-          </button></span
-        >
+            START DELIVERY</button
+          ><span style="margin-left: 20px"
+            ><button
+              class="sub-button"
+              @click="
+                processOrder(
+                  orderData.orderUserId,
+                  orderData.orderNumber,
+                  'cancelled'
+                )
+              "
+            >
+              CANCEL ORDER
+            </button></span
+          >
+        </div>
+
         <!-- <button style="margin-left: 20px">EDIT ORDER</button> -->
         <br />
         <br />
