@@ -10,7 +10,7 @@
           Order ID: {{ orderData.orderNumber }} ({{ orderData.orderStatus }})
         </h3>
         <div v-if="orderData.orderStatus === 'pending'">
-          <button 
+          <button
             @click="
               processOrder(
                 orderData.orderUserId,
@@ -35,6 +35,14 @@
             </button></span
           >
         </div>
+        <span style="margin-left: 20px"
+          ><button
+            class="sub-button"
+            @click="gotoInvoice(orderData.orderUserId, orderData.orderNumber)"
+          >
+            INVOICE
+          </button></span
+        >
 
         <!-- <button style="margin-left: 20px">EDIT ORDER</button> -->
         <br />
@@ -118,7 +126,7 @@ import navBar from "@/components/navBar.vue";
 import pageHeader from "@/components/pageHeader.vue";
 // import { uuid } from "vue-uuid";
 import { getDatabase, ref, child, get, update } from "firebase/database";
-// import Router from "../router";
+import Router from "../router";
 
 export default {
   name: "newItem",
@@ -167,13 +175,15 @@ export default {
               console.log(orderItems[items]);
               totalPrice =
                 totalPrice +
-                orderItems[items].price * orderItems[items].quantity;
-              let extras = orderItems[items].extra;
-              for (let extra in extras) {
-                if (extras[extra].picked === true) {
-                  totalPrice = totalPrice + extras[extra].price;
-                }
-              }
+                (orderItems[items].price * orderItems[items].quantity);
+              // let extras = orderItems[items].extra;
+              console.log("test", totalPrice)
+
+              // for (let extra in extras) {
+              //   if (extras[extra].picked === true) {
+              //     totalPrice = totalPrice + extras[extra].price;
+              //   }
+              // }
             }
             console.log("total", totalPrice);
             this.total = totalPrice;
@@ -210,7 +220,9 @@ export default {
           extraAdd = extraAdd + extraItem.price;
         }
       }
-      totalPrice = item.price * item.quantity + extraAdd;
+      console.log("extras", extraAdd)
+      totalPrice = item.price * item.quantity;
+      console.log(item.price)
       this.totalPrice = Array;
       return totalPrice;
     },
@@ -223,6 +235,10 @@ export default {
       update(ref(db), updates).then(() => {
         location.reload();
       });
+    },
+    gotoInvoice(userID, orderID) {
+      console.log(userID, orderID)
+      Router.push(`/invoice/${orderID}/${userID}`)
     },
   },
 };
@@ -367,9 +383,9 @@ th {
   padding: 8px;
 }
 
-tr:nth-child(even) {
+/* tr:nth-child(even) {
   background-color: #dddddd;
-}
+} */
 .orderItems {
   max-width: 20%;
   width: 100%;

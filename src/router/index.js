@@ -88,10 +88,22 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/users.vue')
   },
   {
+    path: '/users/:userID',
+    name: 'usersProfile',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/SingleUser.vue')
+  },
+  {
     path: '/profile',
     name: 'profile',
 
     component: () => import(/* webpackChunkName: "about" */ '../views/Profile.vue')
+  },
+  {
+    path: '/invoice/:orderID/:userID',
+    name: 'invoice',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/invoice.vue')
   }
 ]
 

@@ -3,7 +3,7 @@
     <h2>{{ page }}</h2>
     <h2>
       Welcome,
-      <router-link class="router" to="/profile">{{ user }}</router-link>
+      {{ user }}
     </h2>
   </div>
 </template>

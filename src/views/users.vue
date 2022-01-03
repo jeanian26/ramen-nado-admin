@@ -1,19 +1,37 @@
+
 <template>
   <div class="container">
     <div class="navbar-container">
       <navBar></navBar>
-      <pageHeader page="Users" :user="user"></pageHeader>
+      <pageHeader page="Users"></pageHeader>
     </div>
-    <div class="page-container">test</div>
+    <div class="page-container">
+      <table>
+        <tr>
+          <th>UserID</th>
+          <th>Email Address</th>
+          <th>Name</th>
+          <th>Phone</th>
+        </tr>
+        <tr v-for="(item, index) in users" v-bind:key="index" @click="navigate(index)">
+          <td>{{index}}</td>
+          <td>{{item.email}}</td>
+          <td>{{item.name}}</td>
+          <td>{{item.phone}}</td>
+        </tr>
+        
+      </table>
+    </div>
   </div>
 </template>
 
 
 <script>
+/* eslint-disable no-unused-vars */
 import navBar from "@/components/navBar.vue";
 import pageHeader from "@/components/pageHeader.vue";
-// import { getDatabase, ref, child, get } from "firebase/database";
-// import Router from "../router";
+import { getDatabase, ref, child, get } from "firebase/database";
+import Router from "../router";
 
 export default {
   name: "Dash-board",
@@ -23,11 +41,32 @@ export default {
   },
   data() {
     return {
-      
+      users:{}
     };
   },
-  mounted() {},
-  methods: {},
+  mounted() {
+    this.getData()
+  },
+  methods: {
+    navigate(userID){
+      Router.push('/users/'+userID)
+    },
+    getData() {
+      const dbRef = ref(getDatabase());
+      get(child(dbRef, "accounts/"))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            console.log(snapshot.val())
+            this.users = snapshot.val()
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+  },
 };
 </script>
 
@@ -84,9 +123,9 @@ th {
   padding: 8px;
 }
 
-tr:nth-child(even) {
+/* tr:nth-child(even) {
   background-color: #dddddd;
-}
+} */
 
 article {
   display: flex;
