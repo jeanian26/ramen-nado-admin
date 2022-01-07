@@ -104,6 +104,12 @@ const routes = [
     name: 'invoice',
 
     component: () => import(/* webpackChunkName: "about" */ '../views/invoice.vue')
+  },
+  {
+    path: '/paypal/:status',
+    name: 'paypal',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/Paypal.vue')
   }
 ]
 
