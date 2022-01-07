@@ -10,106 +10,103 @@ const routes = [
   {
     path: '/about',
     name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import('../views/About.vue')
   },
   {
     path: '/resetpassword',
     name: 'ResetPassword',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/ResetPassword.vue')
+    component: () => import('../views/ResetPassword.vue')
   },
   {
     path: '/Dashboard',
     name: 'DashBoard',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/DashBoard.vue')
+    component: () => import('../views/DashBoard.vue')
   },
   {
     path: '/Orders',
     name: 'Orders',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/Orders.vue')
+    component: () => import('../views/Orders.vue')
   },
   {
     path: '/Orders/:key/:id',
     name: 'OrderItem',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/OrderItem.vue')
+    component: () => import('../views/OrderItem.vue')
   },
   {
     path: '/Menu',
     name: 'Menu',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/Menu.vue')
+    component: () => import('../views/Menu.vue')
   },
   {
     path: '/Menu/:key',
     name: 'MenuList',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/MenuList.vue')
+    component: () => import('../views/MenuList.vue')
   },
   {
     path: '/newitem',
     name: 'NewItem',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/NewItem.vue')
+    component: () => import('../views/NewItem.vue')
   },
   {
     path: '/newcategory',
     name: 'NewCategory',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/NewCategory.vue')
+    component: () => import('../views/NewCategory.vue')
   },
   {
     path: '/editcategory/:key',
     name: 'EditCategory',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/EditCategory.vue')
+    component: () => import('../views/EditCategory.vue')
   },
   {
     path: '/Menu/:category/:key',
     name: 'editItem',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/editItem.vue')
+    component: () => import('../views/editItem.vue')
   },
   {
     path: '/cart',
     name: 'cart',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/Cart.vue')
+    component: () => import('../views/Cart.vue')
   },
   {
     path: '/users',
     name: 'users',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/users.vue')
+    component: () => import('../views/users.vue')
   },
   {
     path: '/users/:userID',
     name: 'usersProfile',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/SingleUser.vue')
+    component: () => import('../views/SingleUser.vue')
   },
   {
     path: '/profile',
     name: 'profile',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/Profile.vue')
+    component: () => import('../views/Profile.vue')
   },
   {
     path: '/invoice/:orderID/:userID',
     name: 'invoice',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/invoice.vue')
+    component: () => import('../views/invoice.vue')
   },
   {
     path: '/paypal/:status',
     name: 'paypal',
 
-    component: () => import(/* webpackChunkName: "about" */ '../views/Paypal.vue')
+    component: () => import('../views/Paypal.vue')
   }
 ]
 
