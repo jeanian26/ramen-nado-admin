@@ -106,7 +106,7 @@ const routes = [
     path: '/paypal/:status',
     name: 'paypal',
 
-    component: () => import('../views/Paypal.vue')
+    component: () => import('../views/paypal.vue')
   }
 ]
 

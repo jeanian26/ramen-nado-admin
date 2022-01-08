@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: "Paypal",
+  name: "paypal",
   components: {},
   data() {
     return {
