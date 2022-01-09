@@ -8,7 +8,7 @@
       <div class="button-container">
         <button @click="gotoLink('editcategory/' + this.$route.params.key)">Edit Category</button>
         <button style="margin-left: 20px" @click="gotoLink('newitem')">Add New Item</button>
-        <button style="margin-left: 20px" @click="gotoLink('newcategory')">Add New Category</button>
+        <!-- <button style="margin-left: 20px" @click="gotoLink('newcategory')">Add New Category</button> -->
       </div>
       <div class="flex-container-center">
         <div class="product-cards-container">
