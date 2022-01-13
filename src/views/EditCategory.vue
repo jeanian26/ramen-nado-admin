@@ -2,7 +2,7 @@
   <div class="container">
     <div class="navbar-container">
       <navBar></navBar>
-      <pageHeader :page="page" :user="user"></pageHeader>
+      <pageHeader :page="'Category ' + this.name" :user="user"></pageHeader>
     </div>
     <div class="page-container" id="menuList">
         <h4>ID: {{key}}</h4>
@@ -38,7 +38,6 @@ export default {
   data() {
     return {
       categoryList: {},
-      page: "Edit Category " + this.$route.params.key,
       name: "",
       imageURI: "",
       oldname: "",
@@ -71,16 +70,19 @@ export default {
     saveData() {
       const db = getDatabase();
       const updates = {};
-      updates[`category/${this.oldname}/name`] = this.name;
-      updates[`category/${this.oldname}/imageUri`] = this.imageURI;
-      update(ref(db), updates);
+      updates[`category/${this.$route.params.key}/name`] = this.name;
+      updates[`category/${this.$route.params.key}/imageUri`] = this.imageURI;
+      update(ref(db), updates).then(() =>{
+        alert('Category Updated')
+        Router.push('/Menu')
+      });
     },
     deleteCategory() {
       const db = getDatabase();
-      set(ref(db, "category/" + this.oldname), {
+      set(ref(db, "category/" + this.$route.params.key), {
       })
         .then(() => {
-          alert("sucess");
+          alert("success");
           Router.push("/Menu");
         })
         .catch((error) => {

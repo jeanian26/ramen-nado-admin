@@ -118,7 +118,7 @@ export default {
         Popular:this.popular,
         stock:this.stock
       }).then(()=>{
-          alert('sucess')
+          alert('success')
           Router.push('/Menu')
       }).catch((error)=>{
           alert(error)

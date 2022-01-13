@@ -51,7 +51,7 @@ export default {
         name: this.name,
         key: randomID,
       }).then(()=>{
-          alert('sucess')
+          alert('success')
           Router.push('/Menu')
       }).catch((error)=>{
           alert(error)

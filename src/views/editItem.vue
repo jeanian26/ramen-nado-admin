@@ -171,6 +171,7 @@ export default {
       updates[`products/${this.key}/price`] = this.price;
       updates[`products/${this.key}/stock`] = this.stock;
       update(ref(db), updates).then(() => {
+        alert("successfully updated product item");
         Router.push("/Menu/" + this.$route.params.category);
       });
     },
@@ -180,7 +181,7 @@ export default {
         const db = getDatabase();
         set(ref(db, "products/" + this.$route.params.key), {})
           .then(() => {
-            alert("sucess");
+            alert("success");
             Router.push("/Menu");
           })
           .catch((error) => {

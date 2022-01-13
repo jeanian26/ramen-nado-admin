@@ -7,16 +7,15 @@
     <div class="page-container" id="menu">
       <h2>Select Menu Category</h2>
       <div class="main-overview">
-          <OverviewCard
-            v-for="(value, key) in categoryList" :key="key"
-            :cardTitle="categoryList[key].name"
-            icon="box"
-            @click="goToLink('/Menu/' + key)"
-          />
-       
+        <OverviewCard
+          v-for="(value, key) in categoryList"
+          :key="key"
+          :cardTitle="categoryList[key].name"
+          icon="box"
+          @click="goToLink('/Menu/' + key)"
+        />
       </div>
       <button @click="goToLink('/newcategory')">Add New Category</button>
-      
     </div>
   </div>
 </template>

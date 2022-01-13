@@ -2,17 +2,26 @@
   <div class="container">
     <div class="navbar-container">
       <navBar></navBar>
-      <pageHeader :page="page" :user="user"></pageHeader>
+      <pageHeader :page="'Category ' + this.name" :user="user"></pageHeader>
     </div>
     <div class="page-container" id="menuList">
       <div class="button-container">
-        <button @click="gotoLink('editcategory/' + this.$route.params.key)">Edit Category</button>
-        <button style="margin-left: 20px" @click="gotoLink('newitem')">Add New Item</button>
+        <button @click="gotoLink('editcategory/' + this.$route.params.key)">
+          Edit Category
+        </button>
+        <button style="margin-left: 20px" @click="gotoLink('newitem')">
+          Add New Item
+        </button>
         <!-- <button style="margin-left: 20px" @click="gotoLink('newcategory')">Add New Category</button> -->
       </div>
       <div class="flex-container-center">
         <div class="product-cards-container">
-          <div class="card" v-for="item in productList" :key="item.title" @click="goToItem(item.key)">
+          <div
+            class="card"
+            v-for="item in productList"
+            :key="item.title"
+            @click="goToItem(item.key)"
+          >
             <div class="card-image-container">
               <img :src="item.imageUri" alt="" />
             </div>
@@ -22,8 +31,6 @@
               <p v-if="item.stock <= 10" class="low-indicator">LOW STOCKS</p>
             </div>
           </div>
-          
-          
         </div>
       </div>
     </div>
@@ -48,10 +55,12 @@ export default {
       count: 0,
       page: "Category " + this.$route.params.key,
       productList: [],
+      name:''
     };
   },
   mounted() {
     this.getEvents();
+    this.getData();
   },
   methods: {
     getEvents() {
@@ -74,17 +83,33 @@ export default {
           console.error(error);
         });
     },
+    getData() {
+      const dbRef = ref(getDatabase());
+      get(child(dbRef, "category/" + this.$route.params.key))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            let result = snapshot.val();
+            console.log(result);
+            this.name = result.name;
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
     goToCategory(key) {
       key = key.trim();
       console.log(key);
       Router.push("/Menu/" + key);
     },
-    gotoLink(link){
-        Router.push("/"+link)
+    gotoLink(link) {
+      Router.push("/" + link);
     },
-    goToItem(item){
-        Router.push(`${this.$route.params.key}/${item}`)
-    }
+    goToItem(item) {
+      Router.push(`${this.$route.params.key}/${item}`);
+    },
   },
 };
 </script>
@@ -167,7 +192,7 @@ export default {
   box-shadow: 5px 5px 10px #cbcbcb;
 }
 .card-image-container {
-    height: 200px;
+  height: 200px;
 }
 .card-image-container img {
   width: 100%;
@@ -183,7 +208,7 @@ export default {
 .card-title-container p {
   margin-top: 10px;
 }
-.low-indicator{
+.low-indicator {
   background-color: red;
   color: white;
 }

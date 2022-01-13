@@ -62,7 +62,7 @@
           </td>
         </tr>
         <tr>
-          <td><strong>Street Number</strong></td>
+          <td><strong>House Number</strong></td>
           <td contenteditable @input="(event) => onChangeStreetNumber(event)">
             {{ Address.str_number }}
           </td>
@@ -127,7 +127,9 @@ export default {
       updates[`address/${this.UserID}/str_number`] = this.Address.str_number? this.Address.str_number:'';
       updates[`address/${this.UserID}/street_name`] = this.Address.street_name? this.Address.street_name:'';
       updates[`address/${this.UserID}/zipcode`] = this.Address.zipcode? this.Address.zipcode:'';
-      update(ref(db), updates);
+      update(ref(db), updates).then(() =>{
+        alert('Successfully Updated User Account')
+      });
     },
     onChangeName(e) {
       console.log(e.target.innerText);
