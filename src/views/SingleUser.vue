@@ -81,6 +81,7 @@
         </tr>
       </table>
       <button @click="test()">Update</button>
+      <button @click="deleteUser()" class="delete-btn">Delete</button>
     </div>
   </div>
 </template>
@@ -92,6 +93,7 @@ import pageHeader from "@/components/pageHeader.vue";
 // import { uuid } from "vue-uuid";
 import { getDatabase, ref, child, get, update } from "firebase/database";
 import Router from "../router";
+const axios = require("axios");
 
 export default {
   name: "newItem",
@@ -105,6 +107,10 @@ export default {
       UserID: this.$route.params.userID,
       UserData: {},
       Address: {},
+      // For Localhost
+      // url: "http://127.0.0.1:5000",
+      // For Live
+      url: "https://ramenadmin.pythonanywhere.com"
     };
   },
   mounted() {
@@ -113,50 +119,58 @@ export default {
   methods: {
     testClick() {
       let rider = this.UserData.rider;
-      console.log(this.UserData.rider);
     },
     test() {
       const db = getDatabase();
       const updates = {};
-      updates[`accounts/${this.UserID}/name`] = this.UserData.name? this.UserData.name:'';
+      updates[`accounts/${this.UserID}/name`] = this.UserData.name
+        ? this.UserData.name
+        : "";
       updates[`accounts/${this.UserID}/phone`] = this.UserData.phone;
-      updates[`accounts/${this.UserID}/admin`] = this.UserData.admin ? this.UserData.admin: false;
-      updates[`accounts/${this.UserID}/rider`] = this.UserData.rider ? this.UserData.rider: false;
-      updates[`address/${this.UserID}/barangay`] = this.Address.barangay ? this.Address.barangay: '';
-      updates[`address/${this.UserID}/city`] = this.Address.city? this.Address.city:'';
-      updates[`address/${this.UserID}/str_number`] = this.Address.str_number? this.Address.str_number:'';
-      updates[`address/${this.UserID}/street_name`] = this.Address.street_name? this.Address.street_name:'';
-      updates[`address/${this.UserID}/zipcode`] = this.Address.zipcode? this.Address.zipcode:'';
-      update(ref(db), updates).then(() =>{
-        alert('Successfully Updated User Account')
+      updates[`accounts/${this.UserID}/admin`] = this.UserData.admin
+        ? this.UserData.admin
+        : false;
+      updates[`accounts/${this.UserID}/rider`] = this.UserData.rider
+        ? this.UserData.rider
+        : false;
+      updates[`address/${this.UserID}/barangay`] = this.Address.barangay
+        ? this.Address.barangay
+        : "";
+      updates[`address/${this.UserID}/city`] = this.Address.city
+        ? this.Address.city
+        : "";
+      updates[`address/${this.UserID}/str_number`] = this.Address.str_number
+        ? this.Address.str_number
+        : "";
+      updates[`address/${this.UserID}/street_name`] = this.Address.street_name
+        ? this.Address.street_name
+        : "";
+      updates[`address/${this.UserID}/zipcode`] = this.Address.zipcode
+        ? this.Address.zipcode
+        : "";
+      update(ref(db), updates).then(() => {
+        alert("Successfully Updated User Account");
       });
     },
     onChangeName(e) {
-      console.log(e.target.innerText);
       this.UserData.name = e.target.innerText;
     },
     onChangePhone(e) {
-      console.log(e.target.innerText);
       this.UserData.phone = e.target.innerText;
     },
     onChangeAddress(e) {
-      console.log(e.target.innerText);
       this.Address.barangay = e.target.innerText;
     },
     onChangeCity(e) {
-      console.log(e.target.innerText);
       this.Address.city = e.target.innerText;
     },
     onChangeStreetNumber(e) {
-      console.log(e.target.innerText);
       this.Address.str_number = e.target.innerText;
     },
     onChangeStreetName(e) {
-      console.log(e.target.innerText);
       this.Address.street_name = e.target.innerText;
     },
     onChangeZipcode(e) {
-      console.log(e.target.innerText);
       this.Address.zipcode = e.target.innerText;
     },
 
@@ -166,7 +180,6 @@ export default {
         .then((snapshot) => {
           if (snapshot.exists()) {
             let result = snapshot.val();
-            console.log(result);
             this.UserData = result;
           } else {
             console.log("No data available");
@@ -179,7 +192,6 @@ export default {
         .then((snapshot) => {
           if (snapshot.exists()) {
             let result = snapshot.val();
-            console.log(result);
             this.Address = result;
           } else {
             console.log("No data available");
@@ -188,6 +200,25 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+    deleteUser() {
+      var confirmDelete = window.confirm("Delete User?");
+      if (confirmDelete) {
+        let id = this.UserID;
+        axios
+          .delete(`${this.url}?uid=${id}`, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+          .then((r) => {
+            console.log(r);
+            Router.push("/Users");
+          })
+          .catch((e) => alert(e));
+      } else {
+        return;
+      }
     },
   },
 };
@@ -346,5 +377,11 @@ button {
   color: white;
   cursor: pointer;
   box-shadow: 5px 5px 10px #ddd3d3;
+}
+.delete-btn {
+  float: right;
+  background-color: rgba(255, 255, 255, 0);
+  border: 1px solid #e62222;
+  color: #e62222;
 }
 </style>

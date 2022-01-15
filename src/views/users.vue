@@ -75,6 +75,10 @@ export default {
       showModal: false,
       email: "",
       password: "",
+      // For Localhost
+      // url: 'http://127.0.0.1:5000',
+      // For Live
+      url: "https://ramenadmin.pythonanywhere.com"
     };
   },
   mounted() {
@@ -89,13 +93,23 @@ export default {
       console.log(content);
 
       axios
-        .post("http://127.0.0.1:5000", content, {
+        .post(this.url, content, {
           headers: {
             "Content-Type": "application/json",
           },
         })
-        .then((response) => console.log(response))
-        .catch((e) => console.log(e));
+        .then((response) => {
+          if (response.data === "Success") {
+            this.email = 0;
+            this.password = 0;
+            this.showModal = false;
+            this.getData()
+            alert('Success')
+          }else{
+            alert(response.data)
+          }
+        })
+        .catch((e) => alert(e));
     },
 
     navigate(userID) {
