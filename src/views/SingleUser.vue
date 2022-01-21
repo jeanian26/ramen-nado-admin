@@ -45,6 +45,18 @@
             <input type="checkbox" name="" id="" v-model="UserData.admin" />
           </td>
         </tr>
+        <tr>
+          <td><strong>Email Verified</strong></td>
+          <td>
+            <input type="checkbox" name="" id="" v-model="UserData.emailVerified" disabled/>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Phone Verified</strong></td>
+          <td>
+            <input type="checkbox" name="" id="" v-model="UserData.phoneVerified" disabled/>
+          </td>
+        </tr>
       </table>
       <br />
       <h3>User Address</h3>
