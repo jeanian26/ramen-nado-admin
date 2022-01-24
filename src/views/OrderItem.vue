@@ -6,22 +6,30 @@
     </div>
     <div class="page-container" id="menuList">
       <div class="form-container">
-        <h3>
-          Order ID: {{ orderData.orderNumber }} ({{ orderData.orderStatus }})
-        </h3>
-        <div v-if="orderData.orderStatus === 'pending'">
-          <button
+        <h3>Order ID: {{ orderData.orderNumber }} ({{ statusText }})</h3>
+        <div>
+          <button style="margin-right: 20px"
+            v-if="orderData.orderStatus === 'pending'"
             @click="
               processOrder(
                 orderData.orderUserId,
                 orderData.orderNumber,
-                'on-the-way'
+                'preparing'
               )
             "
           >
-            START DELIVERY</button
-          ><span style="margin-left: 20px"
-            ><button
+            START PREPARING
+          </button>
+          <button style="margin-right: 20px"
+            v-if="orderData.orderStatus === 'preparing'"
+            @click="
+              showModal = true
+            "
+          >
+            START DELIVERY
+          </button>
+          <span >
+            <button
               class="sub-button"
               @click="
                 processOrder(
@@ -32,10 +40,10 @@
               "
             >
               CANCEL ORDER
-            </button></span
-          >
+            </button>
+          </span>
         </div>
-        <span style="margin-left: 20px"
+        <span
           ><button
             class="sub-button"
             @click="gotoInvoice(orderData.orderUserId, orderData.orderNumber)"
@@ -69,6 +77,18 @@
           <tr>
             <td><strong>Date and Time Ordered</strong></td>
             <td>{{ orderData.orderDate }}</td>
+          </tr>
+          <tr>
+            <td><strong>Date and Time Preparing</strong></td>
+            <td>{{ orderData.Start_preparing }}</td>
+          </tr>
+          <tr>
+            <td><strong>Date and Time Delivery</strong></td>
+            <td>{{ orderData.Start_delivery }}</td>
+          </tr>
+          <tr>
+            <td><strong>Time Estimate</strong></td>
+            <td>{{ orderData.timeEstimate }}</td>
           </tr>
         </table>
         <br />
@@ -117,6 +137,32 @@
         <h3><strong>TOTAL PRICE:</strong> ₱{{ total }}</h3>
       </div>
     </div>
+      <transition name="modal" v-if="showModal" id="add-user-modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h3>Time Estimate</h3>
+          </div>
+          <div class="modal-body">
+            <select v-model="timeEstimate" required>
+              <option value="15 MINS">15 mins</option>
+              <option value="30 MINS">30 mins</option>
+              <option value="45 MINS">45 mins</option>
+              <option value="60 MINS">60 mins</option>
+              <!-- <option value="100">More than 1hr</option> -->
+            </select>
+            <button @click="processOrder(
+                orderData.orderUserId,
+                orderData.orderNumber,
+                'on-the-way'
+              )">Set Time Estimate</button>
+            <button @click="showModal = false" class="secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
   </div>
 </template>
 
@@ -137,6 +183,7 @@ export default {
   data() {
     return {
       page: "Order Item",
+      showModal:false,
       ordeRID: this.$route.params.key,
       UserID: this.$route.params.id,
       orderData: {},
@@ -144,6 +191,8 @@ export default {
       address: "",
       forEdit: true,
       total: 0,
+      statusText: "",
+      timeEstimate:'15 MINS'
     };
   },
   mounted() {
@@ -152,6 +201,27 @@ export default {
     // this.computeOverAllTotal
   },
   methods: {
+    setOrderStatusText(status) {
+      switch (status) {
+        case "pending":
+          this.statusText = "Pending";
+          break;
+        case "preparing":
+          this.statusText = "The order is approved and being made";
+          break;
+        case "on-the-way":
+          this.statusText = "The order is out for delivery";
+          break;
+        case "delivered":
+          this.statusText = "Delivered";
+          break;
+        case "cancelled":
+          this.statusText = "Cancelled";
+          break;
+        default:
+        // code block
+      }
+    },
     getOrder() {
       const dbRef = ref(getDatabase());
       get(child(dbRef, `order/${this.UserID}/${this.ordeRID}`))
@@ -160,6 +230,7 @@ export default {
             let result = snapshot.val();
             console.log(result);
             this.orderData = result;
+            this.setOrderStatusText(result.orderStatus);
             this.address =
               result.orderAddress.str_number +
               " " +
@@ -175,9 +246,9 @@ export default {
               console.log(orderItems[items]);
               totalPrice =
                 totalPrice +
-                (orderItems[items].price * orderItems[items].quantity);
+                orderItems[items].price * orderItems[items].quantity;
               // let extras = orderItems[items].extra;
-              console.log("test", totalPrice)
+              console.log("test", totalPrice);
 
               // for (let extra in extras) {
               //   if (extras[extra].picked === true) {
@@ -220,9 +291,9 @@ export default {
           extraAdd = extraAdd + extraItem.price;
         }
       }
-      console.log("extras", extraAdd)
+      console.log("extras", extraAdd);
       totalPrice = item.price * item.quantity;
-      console.log(item.price)
+      console.log(item.price);
       this.totalPrice = Array;
       return totalPrice;
     },
@@ -231,14 +302,21 @@ export default {
       console.log("userID", userID);
       const db = getDatabase();
       const updates = {};
+      if (status === 'preparing'){
+      updates[`order/${userID}/${orderID}/Start_preparing`] = Date(Date.now());
+      }
+      else if(status === 'on-the-way'){
+      updates[`order/${userID}/${orderID}/timeEstimate`] = this.timeEstimate;
+      updates[`order/${userID}/${orderID}/Start_delivery`] = Date(Date.now());
+      }
       updates[`order/${userID}/${orderID}/orderStatus`] = status;
       update(ref(db), updates).then(() => {
         location.reload();
       });
     },
     gotoInvoice(userID, orderID) {
-      console.log(userID, orderID)
-      Router.push(`/invoice/${orderID}/${userID}`)
+      console.log(userID, orderID);
+      Router.push(`/invoice/${orderID}/${userID}`);
     },
   },
 };
@@ -392,5 +470,109 @@ th {
 }
 button.sub-button {
   background: grey !important;
+}
+
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: table;
+  transition: opacity 0.3s ease;
+}
+
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.modal-container {
+  width: 500px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  transition: all 0.3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.modal-header h3 {
+  margin-top: 0;
+  color: #e62222;
+}
+
+.modal-body {
+  margin: 20px 0;
+}
+
+.modal-body input[type="text"],
+.modal-body input[type="password"],
+select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.modal-body input[type="submit"] {
+  width: 100%;
+  background-color: #e62222;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-default-button {
+  float: right;
+}
+
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-leave-active {
+  opacity: 0;
+}
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
+#userslist button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #e62222;
+  color: white;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px #ddd3d3;
+}
+
+#add-user-modal button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #e62222;
+  color: white;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px #ddd3d3;
+  width: 100%;
+  margin: 10px 0 0 0;
+}
+#add-user-modal .secondary {
+  margin-top: 20px;
+  background-color: #e6222200 !important;
+  color: #e62222;
+  border: 1px solid #e62222;
 }
 </style>
