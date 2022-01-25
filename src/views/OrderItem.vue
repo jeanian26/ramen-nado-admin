@@ -28,8 +28,8 @@
           >
             START DELIVERY
           </button>
-          <span >
-            <button
+          <span>
+            <button v-if="(orderData.orderStatus !== 'cancelled') && (orderData.orderStatus !== 'returned') && (orderData.orderStatus !== 'delivered') "
               class="sub-button"
               @click="
                 processOrder(
@@ -44,7 +44,7 @@
           </span>
         </div>
         <span
-          ><button
+          ><button v-if="(orderData.orderStatus !== 'cancelled') && (orderData.orderStatus !== 'returned')"
             class="sub-button"
             @click="gotoInvoice(orderData.orderUserId, orderData.orderNumber)"
           >
@@ -217,6 +217,9 @@ export default {
           break;
         case "cancelled":
           this.statusText = "Cancelled";
+          break;
+        case "returned":
+          this.statusText = "Returned";
           break;
         default:
         // code block
